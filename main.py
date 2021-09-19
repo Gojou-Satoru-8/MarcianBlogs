@@ -128,7 +128,7 @@ def register():
         login_user(new_user)
         return redirect(url_for("get_all_posts"))
 
-    return render_template("register.html", form=register_form)
+    return render_template("page-register.html", form=register_form)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -150,7 +150,7 @@ def login():
             flash("The email you entered does not exist. Please try again.")
             return redirect(url_for("login"))
 
-    return render_template("login.html", form=login_form)
+    return render_template("page-login.html", form=login_form)
 
 
 @app.route('/logout')
