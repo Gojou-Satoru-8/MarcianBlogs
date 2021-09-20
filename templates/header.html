@@ -66,7 +66,7 @@
                             <li><a href="{{ url_for('home') }}"> <i class="elegant-icon icon_house_alt mr-5"></i> Home</a></li>
                             <li> <a href="{{ url_for('about_us') }}">About</a> </li>
                             <li> <a href="{{ url_for('contact') }}">Contact</a> </li>
-                            <li> <a href="category.html">Category</a> </li>
+                            <li> <a href="{{ url_for('posts_by_category') }}">Category</a> </li>
                         </ul>
                         <!--Mobile menu-->
                         <ul id="mobile-menu" class="d-block d-lg-none text-muted">
@@ -85,7 +85,7 @@
                             <li class="list-inline-item"><a href="{{ url_for('login') }}">Log In</a></li>
                         </ul>
                         <span class="vertical-divider mr-20 ml-20 d-none d-md-inline"></span>
-                        <button class="search-icon d-none d-md-inline"><span class="mr-15 text-muted font-small"><i class="elegant-icon icon_search mr-5"></i>Search</span></button>
+<!--                        <button class="search-icon d-none d-md-inline"><span class="mr-15 text-muted font-small"><i class="elegant-icon icon_search mr-5"></i>Search</span></button>-->
 
                     <div class="off-canvas-toggle-cover d-inline-block">
                         <div class="off-canvas-toggle hidden d-inline-block" id="off-canvas-toggle">

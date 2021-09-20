@@ -1,0 +1,55 @@
+{% include 'header.html' %}
+    <!-- Start Main content -->
+    <main class="bg-grey pb-30">
+        <div class="entry-header entry-header-style-2 pb-120 pt-80 mb-50 text-white" style="background-image: url(https://images.unsplash.com/photo-1453928582365-b6ad33cbcf64?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1100&q=80)">
+            <div class="container entry-header-content">
+                {% if is_edit %}
+                <h1 class="entry-title mb-50 font-weight-900">Edit Post</h1>
+                <h3>Fine tune your blog post</h3>
+                {% else %}
+                <h1 class="entry-title mb-50 font-weight-900">Create Post</h1>
+                <h3> You're gonna make a great blog post</h3>
+                {% endif %}
+            </div>
+        </div>
+        <div class="container single-content">
+            <!--end single header-->
+            <!--figure-->
+            <article class="entry-wraper mb-50">
+                <form class="form-contact comment_form" action="#" id="commentForm">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.title(class="form-control", placeholder="Title") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.subtitle(class="form-control", placeholder="Subtitle") }}
+                                </div>
+                            </div><div class="col-12">
+                                <div class="form-group">
+                                    {{ form.img_url(class="form-control", placeholder="Background Image URL") }}
+                                </div>
+                            </div><div class="col-12">
+                                <div class="form-group">
+                                    {{ form.body(class="form-control", placeholder="Body") }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn button button-contactForm">Post Comment</button>
+                        </div>
+                    </form>
+                    {{ ckeditor.load() }}
+                    {{ ckeditor.config(name='body') }}
+            </article>
+        </div>
+        <!--container-->
+    </main>
+    <!-- End Main content -->
+    <!--site-bottom-->
+
+    <!--end site-bottom-->
+
+{% extends 'footer.html' %}

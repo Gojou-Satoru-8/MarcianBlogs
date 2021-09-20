@@ -71,6 +71,7 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"), nullable=False)
     parent_post = relationship("BlogPost", back_populates="comments")
     text = db.Column(db.Text, nullable=False)   # Content of the comment
+    date = db.Column(db.String(50), nullable=False)
 
 # db.create_all()
 
@@ -118,7 +119,7 @@ def register():
         login_user(new_user)
         return redirect(url_for("home"))
 
-    return render_template("page-register.html", form=register_form)
+    return render_template("register.html", form=register_form)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -140,7 +141,7 @@ def login():
             flash("The email you entered does not exist. Please try again.")
             return redirect(url_for("login"))
 
-    return render_template("page-login.html", form=login_form)
+    return render_template("login.html", form=login_form)
 
 
 @app.route('/logout')
@@ -177,7 +178,7 @@ def contact():
 
 
 @app.route("/new-post", methods=["GET", "POST"])
-@admin_only
+# @admin_only
 def add_new_post():
     form = CreatePostForm()
     if form.validate_on_submit():
@@ -235,5 +236,33 @@ def access_denied(error):
     return render_template("page-404.html")
 
 
+# For development purpose only
+@app.route("/posts")
+def show_posts():
+    comment_form = CommentForm()
+    return render_template("post.html", form=comment_form)
+
+
+@app.route("/userpage")
+def show_userpage():
+    return render_template("user_page.html")
+
+
+@app.route("/about-author")
+def show_author():
+    return render_template("user-more-and-contact.html")
+
+
+@app.route("/category")
+def posts_by_category():
+    return render_template("posts-by-category.html")
+
+
+@app.route("/make-a-new-post/")
+def make_a_new_post():
+    create_post_form = CreatePostForm()
+    return render_template("make-post.html", form=create_post_form)
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)

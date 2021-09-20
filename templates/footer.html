@@ -80,6 +80,7 @@
     </footer>
     <!-- End Footer -->
     <div class="dark-mark"></div>
+{% block vendorjs %}
     <!-- Vendor JS-->
     <script src="{{url_for('static', filename='assets/js/vendor/modernizr-3.6.0.min.js')}}"></script>
     <script src="{{url_for('static', filename='assets/js/vendor/jquery-3.6.0.min.js')}}"></script>
@@ -97,8 +98,11 @@
     <script src="{{url_for('static', filename='assets/js/vendor/perfect-scrollbar.js')}}"></script>
     <script src="{{url_for('static', filename='assets/js/vendor/waypoints.min.js')}}"></script>
     <script src="{{url_for('static', filename='assets/js/vendor/jquery.theia.sticky.js')}}"></script>
+{% endblock %}
+{% block storiesjs %}
     <!-- Stories JS -->
     <script src="{{url_for('static', filename='assets/js/main.js')}}"></script>
+{% endblock %}
 </body>
 
 </html>
