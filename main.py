@@ -6,7 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField, SelectField
+from wtforms.validators import DataRequired, URL, Email, EqualTo
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from flask_ckeditor import CKEditorField
 from functools import wraps, update_wrapper
 
 app = Flask(__name__)
@@ -25,7 +29,7 @@ db = SQLAlchemy(app)
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
+    username = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     # Adding a 1:N relationship between User and BlogPost
@@ -56,7 +60,7 @@ class BlogPost(db.Model):
 class Category(db.Model):
     __tablename__ = "categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String(80), unique=True, nullable=False)
     # Adding a 1:N relationship between Category and BlogPost
     posts = relationship("BlogPost", back_populates="category")
 
@@ -73,7 +77,53 @@ class Comment(db.Model):
     text = db.Column(db.Text, nullable=False)   # Content of the comment
     date = db.Column(db.String(50), nullable=False)
 
-# db.create_all()
+
+db.create_all()
+all_categories = db.session.query(Category).order_by(Category.name).all()
+print(all_categories)
+all_categories_name = [category.name for category in all_categories]
+print(all_categories_name)
+
+
+# # WTForm
+class CreatePostForm(FlaskForm):
+    title = StringField("Blog Post Title", validators=[DataRequired()])
+    subtitle = StringField("Subtitle", validators=[DataRequired()])
+    img_url = StringField("Blog Image URL", validators=[DataRequired(), URL(require_tld=True)])
+    body = CKEditorField("Blog Content", validators=[DataRequired()])
+    category = SelectField(u"Choose the category that best suits your Blog", validators=[DataRequired()],
+                           choices=all_categories_name)
+    submit = SubmitField("Submit Post")
+
+
+class RegisterForm(FlaskForm):
+    username = StringField(label="Username", validators=[DataRequired()])
+    email = StringField(label="Email", validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
+    password = PasswordField(label="Password", validators=[DataRequired(), EqualTo(fieldname='password_check', message="Passwords must match")])
+    password_check = PasswordField(label="Confirm Password", validators=[DataRequired()])
+    submit = SubmitField(label="Sign Me Up!")
+
+
+class LoginForm(FlaskForm):
+    email = StringField(label="Email", validators=[DataRequired()])
+    password = PasswordField(label="Password", validators=[DataRequired()])
+    submit = SubmitField(label="Log Me In!")
+
+
+class CommentForm(FlaskForm):
+    comment = CKEditorField(label="Comment", validators=[DataRequired()])
+    submit = SubmitField(label="Post Comment")
+
+
+class SearchForm(FlaskForm):
+    keyword = StringField(label="Search for blogs or users", validators=[DataRequired()])
+    selections = SelectField(label="Choose your Scope", choices=["Users", "Blog Posts"])
+    submit = SubmitField(label="Search")
+
+
+# class ResetForm(FlaskForm):
+#     password = StringField()
+#     confirm_pass = StringField()
 
 
 login_manager = LoginManager(app=app)
@@ -99,7 +149,8 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    posts = BlogPost.query.all()
+    posts = db.session.query(BlogPost).all()
+    print(posts)
     return render_template("index.html", all_posts=posts)
     # return render_template("index.html")
 
@@ -108,12 +159,13 @@ def home():
 def register():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
+        print("POST request for register form successful")
         if db.session.query(User).filter_by(email=register_form.email.data).first():
             flash("Your email is already registered. Log in instead!")
             return redirect(url_for("login"))
 
         hashed_pw = generate_password_hash(password=register_form.password.data, method="pbkdf2:sha256", salt_length=8)
-        new_user = User(name=register_form.username.data, email=register_form.email.data, password=hashed_pw)
+        new_user = User(username=register_form.username.data, email=register_form.email.data, password=hashed_pw)
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
@@ -128,6 +180,7 @@ def login():
         return redirect(url_for("home"))
     login_form = LoginForm()
     if login_form.validate_on_submit():
+        print("POST request for login form successful")
         user_to_check = db.session.query(User).filter_by(email=login_form.email.data).first()
         if user_to_check:
             if check_password_hash(pwhash=user_to_check.password, password=login_form.password.data):
@@ -148,6 +201,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    print(f"User ID: {current_user} logged out")
     return redirect(url_for('home'))
 
 
@@ -182,13 +236,15 @@ def contact():
 def add_new_post():
     form = CreatePostForm()
     if form.validate_on_submit():
+        print(form.category.data, type(form.category.data))
         new_post = BlogPost(
             title=form.title.data,
             subtitle=form.subtitle.data,
             body=form.body.data,
             img_url=form.img_url.data,
             author_id=current_user.id,
-            date=date.today().strftime("%B %d, %Y")
+            date=date.today().strftime("%B %d, %Y"),
+            category=db.session.query(Category).filter_by(name=form.category.data).first()
         )
         db.session.add(new_post)
         db.session.commit()
@@ -211,6 +267,7 @@ def edit_post(post_id):
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
         post.body = edit_form.body.data
+        post.category = edit_form.category.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
@@ -258,11 +315,11 @@ def posts_by_category():
     return render_template("posts-by-category.html")
 
 
-@app.route("/make-a-new-post/")
-def make_a_new_post():
-    create_post_form = CreatePostForm()
-    return render_template("make-post.html", form=create_post_form)
+# @app.route("/make-a-new-post/")   # /new-post route is working so commented
+# def make_a_new_post():
+#     create_post_form = CreatePostForm()
+#     return render_template("make-post.html", form=create_post_form)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

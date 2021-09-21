@@ -8,17 +8,23 @@
                         <div class="padding_eight_all bg-white">
                             <div class="heading_s1 text-center">
                                 <h3 class="mb-30 font-weight-900">Create an account</h3>
+                                {% set messages = get_flashed_messages() %}
+                                {% for msg in messages %}
+                                <p>{{ msg }}</p>
+                            {% endfor %}
                             </div>
-                            <form method="post" action="{{ url_for('register') }}" novalidate>
+
+                            <form method="POST" action="{{ url_for('register') }}" novalidate>
+                                {{ form.csrf_token }}
                                 <div class="form-group">
-                                    {{ form.username(class="form-control", placeholder="Username") }}
-                                    {% for err in form.username.errors %}
+                                    {{ form.email(class="form-control", placeholder="Email") }}
+                                    {% for err in form.email.errors %}
                                         {{ err }}
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
-                                    {{ form.email(class="form-control", placeholder="Email") }}
-                                    {% for err in form.email.errors %}
+                                    {{ form.username(class="form-control", placeholder="Username") }}
+                                    {% for err in form.username.errors %}
                                         {{ err }}
                                     {% endfor %}
                                 </div>
