@@ -1,0 +1,86 @@
+{% include 'header.html' %}
+    <!-- Start Main content -->
+    <main class="bg-grey pt-80 pb-50">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-md-10">
+                    <div class="login_wrap widget-taber-content p-30 bg-white border-radius-10">
+                        <div class="padding_eight_all bg-white">
+                            <div class="heading_s1 text-center">
+                                <h3 class="mb-30 font-weight-900">Edit Your Profile</h3>
+                                {% set messages = get_flashed_messages() %}
+                                {% for msg in messages %}
+                                <p>{{ msg }}</p>
+                            {% endfor %}
+                            </div>
+
+                            <form method="POST" action="{{ url_for('edit_user_profile', user_id=user.id) }}" novalidate>
+                                {{ form.csrf_token }}
+                                <div class="form-group">
+                                    {{ form.email(class="form-control", placeholder="Email") }}
+                                    {% for err in form.email.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.username(class="form-control", placeholder="Username") }}
+                                    {% for err in form.username.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.short_desc(class="form-control", rows=3,
+                                    placeholder='List three things that best define You\nMake sure to use commas for separation\nEx: "Travel Blogger, Content Blogger, Food Guide", etc') }}
+                                    {% for err in form.short_desc.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.long_desc(class="form-control", rows=8,
+                                    placeholder="Describe Yourself in Detail.\nContent you put here will make up your profile page") }}
+                                    {% for err in form.long_desc.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.pfp(class="form-control", placeholder="Upload your Profile Picture (max-size 5 MB)\nOnly .jpeg, .png and .gif accepted)") }}
+                                    {% for err in form.long_desc.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form.submit(class="button button-contactForm btn-block") }}
+                                </div>
+                            </form>
+<!--                            <div class="divider-text-center mt-15 mb-15">-->
+<!--                                <span> or</span>-->
+<!--                            </div>-->
+<!--                            <ul class="btn-login list_none text-center mb-15">-->
+<!--                                <li><a href="#" class="btn btn-facebook"><i class="elegant-icon social_facebook  mr-5"></i>Facebook</a></li>-->
+<!--                                <li><a href="#" class="btn btn-google"><i class="elegant-icon social_googleplus mr-5"></i>Google</a></li>-->
+<!--                            </ul>-->
+                            <div class="text-muted text-center">Already have an account? <a href="{{ url_for('login') }}">Log in now</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- End Main content -->
+{% include 'footer.html' %}

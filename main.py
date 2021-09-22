@@ -36,7 +36,7 @@ migrate = Migrate(app, db)
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(250), nullable=False)
+    username = db.Column(db.String(250), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     short_desc = db.Column(db.Text)
@@ -364,17 +364,34 @@ def access_denied(error):
 
 @app.route("/user/<int:user_id>")
 def posts_by_user(user_id):
-    # user = db.session.query(User).get(user_id)
-    # blogs_from_this_user = user.posts
-    # return render_template("user_page.html", user=user, user_blogs=blogs_from_this_user)
-    return render_template("user_page.html")
+    user = db.session.query(User).get(user_id)
+    blogs_from_this_user = user.posts
+    return render_template("user_page.html", user=user, user_posts=blogs_from_this_user,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/user/<int:user_id/about")
-def show_user_more(user_id):
-    # user = db.session.query(User).get(user_id)
-    # return render_template("user-more-and-contact.html", user=user)
-    return render_template("user-more-and-contact.html")
+@app.route("/user/<int:user_id>/profile")
+def show_user_profile(user_id):
+    user = db.session.query(User).get(user_id)
+    return render_template("user-profile-contact.html", user=user,
+                           all_categories=Category.query.order_by(Category.name).all())
+
+
+@app.route("/user/<int:user_id>/profile/edit", methods=["GET", "POST"])
+def edit_user_profile(user_id):
+    user = db.session.query(User).get(user_id)
+    edit_profile_form = EditProfileForm(username=user.username, email=user.email,
+                                        short_desc=user.short_desc, long_desc=user.long_desc)
+    if edit_profile_form.validate_on_submit():
+        user.username = edit_profile_form.username.data
+        user.email = edit_profile_form.email.data
+        user.short_desc = edit_profile_form.short_desc.data
+        user.long_desc = edit_profile_form.long_desc.data
+        db.session.commit()
+        return redirect(url_for("show_user_profile", user_id=user.id))      # Or user_id=user_id
+
+    return render_template("edit-user-profile.html", user=user, form=edit_profile_form,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
 @app.route("/category/<int:cat_id>")
