@@ -1,17 +1,22 @@
 from flask import Flask, render_template, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
-from datetime import date
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, SelectField, IntegerField, TextAreaField
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from flask_uploads import UploadSet, IMAGES
+from werkzeug.utils import secure_filename
 from wtforms.validators import DataRequired, URL, Email, EqualTo
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flask_ckeditor import CKEditorField
 from functools import wraps, update_wrapper
+import smtplib
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -19,9 +24,11 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 
 # # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:86IamAnkush@localhost:5432/blogs'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1000 * 1000
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 # # CONFIGURE TABLES
@@ -32,6 +39,10 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    short_desc = db.Column(db.Text)
+    long_desc = db.Column(db.Text)
+    pfp_name = db.Column(db.String(300))
+    pfp_data = db.Column(db.LargeBinary)
     # Adding a 1:N relationship between User and BlogPost
     posts = relationship("BlogPost", back_populates="author")   # Step 1, also step 3 (back_populates)
     # Adding a 1:N relationship between User and Comment
@@ -44,7 +55,7 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
     subtitle = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
     # Adding a author_id Foreign Key with bidirectional 1:N relationship between User and BlogPost
@@ -75,14 +86,14 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"), nullable=False)
     parent_post = relationship("BlogPost", back_populates="comments")
     text = db.Column(db.Text, nullable=False)   # Content of the comment
-    date = db.Column(db.String(50), nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False)
 
 
 db.create_all()
-all_categories = db.session.query(Category).order_by(Category.name).all()
-print(all_categories)
-all_categories_name = [category.name for category in all_categories]
-print(all_categories_name)
+# all_categories = db.session.query(Category).order_by(Category.name).all()
+# print(all_categories)
+# all_categories_name = [category.name for category in all_categories]
+# print(all_categories_name)
 
 
 # # WTForm
@@ -91,6 +102,8 @@ class CreatePostForm(FlaskForm):
     subtitle = StringField("Subtitle", validators=[DataRequired()])
     img_url = StringField("Blog Image URL", validators=[DataRequired(), URL(require_tld=True)])
     body = CKEditorField("Blog Content", validators=[DataRequired()])
+    all_categories = db.session.query(Category).order_by(Category.name).all()
+    all_categories_name = [category.name for category in all_categories]
     category = SelectField(u"Choose the category that best suits your Blog", validators=[DataRequired()],
                            choices=all_categories_name)
     submit = SubmitField("Submit Post")
@@ -99,7 +112,8 @@ class CreatePostForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField(label="Username", validators=[DataRequired()])
     email = StringField(label="Email", validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
-    password = PasswordField(label="Password", validators=[DataRequired(), EqualTo(fieldname='password_check', message="Passwords must match")])
+    password = PasswordField(label="Password",
+                             validators=[DataRequired(), EqualTo(fieldname='password_check', message="Passwords must match")])
     password_check = PasswordField(label="Confirm Password", validators=[DataRequired()])
     submit = SubmitField(label="Sign Me Up!")
 
@@ -120,6 +134,24 @@ class SearchForm(FlaskForm):
     selections = SelectField(label="Choose your Scope", choices=["Users", "Blog Posts"])
     submit = SubmitField(label="Search")
 
+
+class GetInTouchForm(FlaskForm):
+    name = StringField(label="Name", validators=[DataRequired()])
+    phone = IntegerField(label="Phone", validators=[DataRequired()])
+    email = StringField(label="Email",
+                        validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
+    message = TextAreaField(label="Message", validators=[DataRequired()])
+
+
+class EditProfileForm(FlaskForm):
+    username = StringField(label="Username", validators=[DataRequired()])
+    email = StringField(label="Email",
+                        validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
+    short_desc = CKEditorField(label="A short introduction of yours", validators=[DataRequired()])
+    long_desc = CKEditorField(label="Describe yourself to your readers", validators=[DataRequired()])
+    pfp = FileField(label="Upload a Profile Picture with max-size 5 MB (only .jpeg, .png and .gif accepted)",
+                    validators=[FileAllowed(upload_set=UploadSet('images', IMAGES), message="Images only!")])
+    submit = SubmitField("Confirm Changes")
 
 # class ResetForm(FlaskForm):
 #     password = StringField()
@@ -150,9 +182,23 @@ def load_user(user_id):
 @app.route('/')
 def home():
     posts = db.session.query(BlogPost).all()
-    print(posts)
-    return render_template("index.html", all_posts=posts)
-    # return render_template("index.html")
+    all_categories = Category.query.order_by(Category.name).all()
+    print(all_categories)
+    # posts_per_category = {category.id: len(category.posts) for category in all_categories}
+    # print(posts_per_category)       # Gives (category id, number of posts) key-value pair
+    # sorted_number_of_posts = sorted(posts_per_category.values(), reverse=True)
+    # print(sorted_number_of_posts)   # Gives highest to lowest post-count
+    # popular_categories = {posts_per_category.get(number): number for number in sorted_number_of_posts}
+    # print(popular_categories)       #
+    # Second try : Just getting the travel, art and photography categories (Both ways work:)
+    # all_travel_posts = db.session.query(BlogPost).filter_by(category_id=17).all()
+    # all_art_posts = db.session.query(BlogPost).filter_by(category_id=<find_id_in_db>).all()
+    # all_photography_posts = db.session.query(BlogPost).filter_by(category_id=<find_id_in_db>).all()
+
+    # all_travel_posts = db.session.query(Category).filter_by(name="Travel").first().posts
+    # all_art_posts = db.session.query(Category).filter_by(name="Art").first().posts
+    # all_photography_posts = db.session.query(Category).filter_by(name="Photography").first().posts
+    return render_template("index.html", all_posts=posts, all_categories=all_categories)
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -171,7 +217,7 @@ def register():
         login_user(new_user)
         return redirect(url_for("home"))
 
-    return render_template("register.html", form=register_form)
+    return render_template("register.html", form=register_form, all_categories=Category.query.order_by(Category.name).all())
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -194,7 +240,7 @@ def login():
             flash("The email you entered does not exist. Please try again.")
             return redirect(url_for("login"))
 
-    return render_template("login.html", form=login_form)
+    return render_template("login.html", form=login_form, all_categories=Category.query.order_by(Category.name).all())
 
 
 @app.route('/logout')
@@ -211,24 +257,38 @@ def show_post(post_id):
     comment_form = CommentForm()
     if comment_form.validate_on_submit():
         if current_user.is_authenticated:
-            new_comment = Comment(text=comment_form.comment.data, commenter_id=current_user.id, post_id=post_id)
+            new_comment = Comment(text=comment_form.comment.data, commenter=current_user,
+                                  parent_post=requested_post, datetime=datetime.utcnow())
             db.session.add(new_comment)
             db.session.commit()     # Following line is optional, as it would lead to the final return render_template
             # return redirect(url_for("show_post", post_id=post_id))    # statement, to render the same page.
         else:
             flash("You need to login or register to comment")
             return redirect(url_for("login"))
-    return render_template("post.html", post=requested_post, form=comment_form, comments=requested_post.comments)
+    return render_template("post.html", post=requested_post, form=comment_form, comments=requested_post.comments,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/about-us")
+@app.route("/about-us", methods=["GET", "POST"])
 def about_us():
-    return render_template("about-us.html")
+    form = GetInTouchForm()
+    confirmation_msg = None
+    if form.validate_on_submit():
+        mail_contents = f"Name: {form.name.data}\nPhone: {form.phone.data}\nEmail: {form.email.data}\n" \
+                        f"Message:\n{form.message.data}"
+        with smtplib.SMTP(host="smtp.gmail.com", port=587) as connection:
+            connection.starttls()
+            connection.login(user="ankushbhowmiktesting@gmail.com", password="Ankush123*()")
+            connection.sendmail(from_addr="ankushbhowmiktesting@gmail.com", to_addrs="ankushbhowmiktesting@gmail.com",
+                                msg=f"Subject:Marcian Blogs - Get In Touch\n\n{mail_contents}")
+        confirmation_msg = "Message Sent Successfully"
+    return render_template("about-us.html", form=form, confirmation_msg=confirmation_msg,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact-us.html")
+# @app.route("/contact")    # Not required, as /about-us has pretty much the same content, including the contact form
+# def contact():
+#     return render_template("contact-us.html")
 
 
 @app.route("/new-post", methods=["GET", "POST"])
@@ -243,39 +303,41 @@ def add_new_post():
             body=form.body.data,
             img_url=form.img_url.data,
             author_id=current_user.id,
-            date=date.today().strftime("%B %d, %Y"),
+            datetime=datetime.utcnow(),
             category=db.session.query(Category).filter_by(name=form.category.data).first()
         )
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("home"))
-    return render_template("make-post.html", form=form)
+    return render_template("make-post.html", form=form, all_categories=Category.query.order_by(Category.name).all())
 
 
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
-@admin_only
+# @admin_only
 def edit_post(post_id):
-    post = BlogPost.query.get(post_id)
+    post = db.session.query(BlogPost).get(post_id)
     edit_form = CreatePostForm(
         title=post.title,
         subtitle=post.subtitle,
         img_url=post.img_url,
-        body=post.body
+        body=post.body,
+        category=post.category.name
     )
     if edit_form.validate_on_submit():
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
         post.body = edit_form.body.data
-        post.category = edit_form.category.data
+        post.category = db.session.query(Category).filter_by(name=edit_form.category.data).first()
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
-    return render_template("make-post.html", form=edit_form, is_edit=True)
+    return render_template("make-post.html", post=post, form=edit_form, is_edit=True,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
 @app.route("/delete/<int:post_id>")
-@admin_only
+# @admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)
@@ -290,29 +352,36 @@ def access_denied(error):       # This arg is required, probably some other func
 
 @app.errorhandler(404)
 def access_denied(error):
-    return render_template("page-404.html")
+    return render_template("page-404.html", all_categories=Category.query.order_by(Category.name).all())
 
 
 # For development purpose only
-@app.route("/posts")
-def show_posts():
-    comment_form = CommentForm()
-    return render_template("post.html", form=comment_form)
+# @app.route("/posts")      # /post/<int:post_id> route is working so commented
+# def show_posts():
+#     comment_form = CommentForm()
+#     return render_template("post.html", form=comment_form)
 
 
-@app.route("/userpage")
-def show_userpage():
+@app.route("/user/<int:user_id>")
+def posts_by_user(user_id):
+    # user = db.session.query(User).get(user_id)
+    # blogs_from_this_user = user.posts
+    # return render_template("user_page.html", user=user, user_blogs=blogs_from_this_user)
     return render_template("user_page.html")
 
 
-@app.route("/about-author")
-def show_author():
+@app.route("/user/<int:user_id/about")
+def show_user_more(user_id):
+    # user = db.session.query(User).get(user_id)
+    # return render_template("user-more-and-contact.html", user=user)
     return render_template("user-more-and-contact.html")
 
 
-@app.route("/category")
-def posts_by_category():
-    return render_template("posts-by-category.html")
+@app.route("/category/<int:cat_id>")
+def posts_by_category(cat_id):
+    category = db.session.query(Category).get(cat_id)
+    return render_template("posts-by-category.html", category=category,
+                           all_categories=Category.query.order_by(Category.name).all())
 
 
 # @app.route("/make-a-new-post/")   # /new-post route is working so commented

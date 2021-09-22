@@ -31,28 +31,33 @@
 <!--                <h3 class="mt-30">Advertise</h3>-->
 <!--                <hr class="wp-block-separator is-style-wide">-->
 <!--                <p>Please contact us directly at ads@ultranews.com. For large or unique campaigns please email sale@ultranews.com for requests-for-proposal and additional pricing information. </p>-->
+                {% if confirmation_msg %}
+                <h1 class="mt-30">{{ confirmation_msg }}</h1>
+                {% else %}
                 <h1 class="mt-30">Get in touch</h1>
+                {% endif %}
                 <hr class="wp-block-separator is-style-wide">
-                <form class="form-contact comment_form" action="#" id="commentForm">
+                <form class="form-contact comment_form" id="commentForm" action="{{ url_for('about_us') }}" method="POST">
+                    {{ form.csrf_token }}
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <input class="form-control" name="name" id="name" type="text" placeholder="Name">
+                                {{ form.name(class="form-control", placeholder="Name") }}
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <input class="form-control" name="email" id="email" type="email" placeholder="Email">
+                                {{ form.phone(class="form-control", placeholder="Phone") }}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <input class="form-control" name="website" id="website" type="text" placeholder="Phone">
+                                {{ form.email(class="form-control", placeholder="Email") }}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Message"></textarea>
+                                {{ form.message(class="form-control", placeholder="Message", rows="8") }}
                             </div>
                         </div>
                     </div>

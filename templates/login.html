@@ -22,13 +22,19 @@
                                 <div class="form-group">
                                     {{ form.email(class="form-control", placeholder="Your Email") }}
                                     {% for err in form.email.errors %}
-                                        {{ err }}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ form.password(class="form-control", placeholder="Your Password") }}
                                     {% for err in form.password.errors %}
-                                        {{ err }}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
                                     {% endfor %}
                                 </div>
 <!--                                <div class="login_footer form-group">-->

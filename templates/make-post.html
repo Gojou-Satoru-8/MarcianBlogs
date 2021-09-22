@@ -16,44 +16,85 @@
             <!--end single header-->
             <!--figure-->
             <article class="entry-wraper mb-50">
-                <form class="form-contact comment_form" id="commentForm" action="{{ url_for('add_new_post') }}" method="POST">
-                    {{ form.csrf_token }}
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.title(class="form-control", placeholder="Title") }}
+                {% if is_edit %}
+                    <form class="form-contact comment_form" id="commentForm" action="{{ url_for('edit_post', post_id=post.id) }}" method="POST">
+                        {{ form.csrf_token }}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.title(class="form-control", placeholder="Title") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.subtitle(class="form-control", placeholder="Subtitle") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.img_url(class="form-control", placeholder="Place your Background Image URL here, and select your category below") }}
+                                </div>
+                            </div>
+    <!--                        <div class="col-sm-6 pb-80">-->
+    <!--&lt;!&ndash;                            <div class="form-group">&ndash;&gt;-->
+    <!--                                {{ form.category.label }}-->
+    <!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+    <!--                        </div>-->
+                            <div class="col-12 pb-20">
+                                <div class="form-group">
+                                    {{ form.category(class="form-control", placeholder="Choose a category that best suits your Blog") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.body(class="form-control", placeholder="Body") }}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.subtitle(class="form-control", placeholder="Subtitle") }}
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn button button-contactForm">Update Your Blog</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <form class="form-contact comment_form" id="commentForm" action="{{ url_for('add_new_post') }}" method="POST">
+                        {{ form.csrf_token }}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.title(class="form-control", placeholder="Title") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.subtitle(class="form-control", placeholder="Subtitle") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.img_url(class="form-control", placeholder="Place your Background Image URL here, and select your category below") }}
+                                </div>
+                            </div>
+    <!--                        <div class="col-sm-6 pb-80">-->
+    <!--&lt;!&ndash;                            <div class="form-group">&ndash;&gt;-->
+    <!--                                {{ form.category.label }}-->
+    <!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+    <!--                        </div>-->
+                            <div class="col-12 pb-20">
+                                <div class="form-group">
+                                    {{ form.category(class="form-control", placeholder="Choose a category that best suits your Blog") }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.body(class="form-control", placeholder="Body") }}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.img_url(class="form-control", placeholder="Place your Background Image URL here, and select your category below") }}
-                            </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn button button-contactForm">Post Your Blog</button>
                         </div>
-<!--                        <div class="col-sm-6 pb-80">-->
-<!--&lt;!&ndash;                            <div class="form-group">&ndash;&gt;-->
-<!--                                {{ form.category.label }}-->
-<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
-<!--                        </div>-->
-                        <div class="col-12 pb-20">
-                            <div class="form-group">
-                                {{ form.category(class="form-control", placeholder="Choose a category that best suits your Blog") }}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.body(class="form-control", placeholder="Body") }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn button button-contactForm">Post Your Blog</button>
-                    </div>
-                </form>
+                    </form>
+                {% endif %}
                 {{ ckeditor.load() }}
                 {{ ckeditor.config(name='body') }}
             </article>

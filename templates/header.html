@@ -31,11 +31,9 @@
                 </div>
                 <div class="widget_nav_menu">
                     <ul>
-                        <li class="cat-item cat-item-2"><a href="category.html">Travel tips</a> <span class="post-count">30</span></li>
-                        <li class="cat-item cat-item-3"><a href="category-grid.html">Book review</a> <span class="post-count">25</span></li>
-                        <li class="cat-item cat-item-4"><a href="category-list.html">Hotel review</a> <span class="post-count">16</span></li>
-                        <li class="cat-item cat-item-5"><a href="category-masonry.html">Destinations </a> <span class="post-count">22</span></li>
-                        <li class="cat-item cat-item-6"><a href="category-big.html">Lifestyle</a> <span class="post-count">25</span></li>
+                        {% for category in all_categories %}
+                            <li class="cat-item"><a href="{{ url_for('posts_by_category', cat_id=category.id) }}">{{ category.name }}</a> <span class="post-count">{{ category.posts.__len__() }}</span></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -65,8 +63,8 @@
                         <ul class="main-menu d-none d-lg-inline font-small">
                             <li><a href="{{ url_for('home') }}"> <i class="elegant-icon icon_house_alt mr-5"></i> Home</a></li>
                             <li> <a href="{{ url_for('about_us') }}">About</a> </li>
-                            <li> <a href="{{ url_for('contact') }}">Contact</a> </li>
-                            <li> <a href="{{ url_for('posts_by_category') }}">Category</a> </li>
+<!--                            <li> <a href="{ url_for('contact') }">Contact</a> </li>-->
+<!--                            <li> <a href="{ url_for('posts_by_category') }">Category</a> </li>-->
                         </ul>
                         <!--Mobile menu-->
                         <ul id="mobile-menu" class="d-block d-lg-none text-muted">
@@ -74,7 +72,7 @@
                             <li><a href="{{ url_for('login') }}">Login</a>
                             <li><a href="{{ url_for('register') }}">Sign Up</a>
                             <li><a href="{{ url_for('about_us') }}">About</a>
-                            <li><a href="{{ url_for('contact') }}">Contact</a>
+<!--                            <li><a href="{ url_for('contact') }">Contact</a>-->
                             <li><a href="#">Category</a></li>
                         </ul>
                     </nav>
