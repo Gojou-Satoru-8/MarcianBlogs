@@ -66,8 +66,9 @@
                         <ul class="main-menu d-none d-lg-inline font-small">
                             <li><a href="{{ url_for('home') }}"> <i class="elegant-icon icon_house_alt mr-5"></i> Home</a></li>
                             <li> <a href="{{ url_for('about_us') }}">About</a> </li>
+                            {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('posts_by_user', user_id=current_user.id) }}">Your Page</a>
-
+                            {% endif %}
 <!--                            <li> <a href="{ url_for('contact') }">Contact</a> </li>-->
 <!--                            <li> <a href="{ url_for('posts_by_category') }">Category</a> </li>-->
                         </ul>

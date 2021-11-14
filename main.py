@@ -141,6 +141,7 @@ class GetInTouchForm(FlaskForm):
     email = StringField(label="Email",
                         validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
     message = TextAreaField(label="Message", validators=[DataRequired()])
+    submit = SubmitField("Send Message")
 
 
 class EditProfileForm(FlaskForm):
@@ -210,6 +211,10 @@ def register():
             flash("Your email is already registered. Log in instead!")
             return redirect(url_for("login"))
 
+        elif db.session.query(User).filter_by(username=register_form.username.data).first():
+            flash("Username is already taken. Please choose something else!")
+            return redirect(url_for("register"))
+
         hashed_pw = generate_password_hash(password=register_form.password.data, method="pbkdf2:sha256", salt_length=8)
         new_user = User(username=register_form.username.data, email=register_form.email.data, password=hashed_pw)
         db.session.add(new_user)
@@ -273,15 +278,19 @@ def show_post(post_id):
 def about_us():
     form = GetInTouchForm()
     confirmation_msg = None
+    # print(confirmation_msg)
     if form.validate_on_submit():
         mail_contents = f"Name: {form.name.data}\nPhone: {form.phone.data}\nEmail: {form.email.data}\n" \
                         f"Message:\n{form.message.data}"
+        # print(mail_contents)
         with smtplib.SMTP(host="smtp.gmail.com", port=587) as connection:
             connection.starttls()
             connection.login(user="ankushbhowmiktesting@gmail.com", password="Ankush123*()")
             connection.sendmail(from_addr="ankushbhowmiktesting@gmail.com", to_addrs="ankushbhowmiktesting@gmail.com",
                                 msg=f"Subject:Marcian Blogs - Get In Touch\n\n{mail_contents}")
         confirmation_msg = "Message Sent Successfully"
+    else:
+        print("Form not validated")
     return render_template("about-us.html", form=form, confirmation_msg=confirmation_msg,
                            all_categories=Category.query.order_by(Category.name).all())
 
@@ -408,4 +417,4 @@ def posts_by_category(cat_id):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
