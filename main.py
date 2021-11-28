@@ -141,7 +141,7 @@ class GetInTouchForm(FlaskForm):
     email = StringField(label="Email",
                         validators=[DataRequired(), Email(granular_message=True, check_deliverability=True)])
     message = TextAreaField(label="Message", validators=[DataRequired()])
-    submit = SubmitField("Send Message")
+    submit = SubmitField(label="Send Message")
 
 
 class EditProfileForm(FlaskForm):
@@ -259,6 +259,9 @@ def logout():
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
+    post_author_id = requested_post.author_id
+    other_posts_by_same_author = BlogPost.query.filter_by(author_id=post_author_id).all()
+    other_posts_by_same_author.remove(requested_post)   # Removing the current post
     comment_form = CommentForm()
     if comment_form.validate_on_submit():
         if current_user.is_authenticated:
@@ -271,6 +274,7 @@ def show_post(post_id):
             flash("You need to login or register to comment")
             return redirect(url_for("login"))
     return render_template("post.html", post=requested_post, form=comment_form, comments=requested_post.comments,
+                           related_posts=other_posts_by_same_author[:3:],
                            all_categories=Category.query.order_by(Category.name).all())
 
 
@@ -345,13 +349,21 @@ def edit_post(post_id):
                            all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/delete/<int:post_id>")
+@app.route("/delete-post/<int:post_id>")
 # @admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('home'))
+
+
+@app.route("/delete-comment/<int:comment_id>")
+def delete_comment(comment_id):
+    comment_to_delete = Comment.query.get(comment_id)
+    db.session.delete(comment_to_delete)
+    db.session.commit()
+    return redirect(url_for("show_post", post_id=comment_to_delete.post_id ))
 
 
 @app.errorhandler(403)
@@ -379,10 +391,25 @@ def posts_by_user(user_id):
                            all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/user/<int:user_id>/profile")
+@app.route("/user/<int:user_id>/profile", methods=["GET", "POST"])
 def show_user_profile(user_id):
     user = db.session.query(User).get(user_id)
-    return render_template("user-profile-contact.html", user=user,
+    form = GetInTouchForm()
+    confirmation_msg = None
+    if form.validate_on_submit():
+        mail_contents = f"Name: {form.name.data}\nPhone: {form.phone.data}\nEmail: {form.email.data}\n" \
+                        f"Message:\n{form.message.data}"
+        with smtplib.SMTP(host="smtp.gmail.com", port=587) as connection:
+            connection.starttls()
+            connection.login(user="ankushbhowmiktesting@gmail.com", password="Ankush123*()")
+            connection.sendmail(from_addr="ankushbhowmiktesting@gmail.com", to_addrs=user.email,
+                                msg=f"Subject:Marcian Blogs - User Wants to contact you\n\n {mail_contents}")
+
+            confirmation_msg = "Mail sent successfully"
+    else:
+        print("Form not validated")
+
+    return render_template("user-profile-contact.html", user=user, form=form, confirmation_msg=confirmation_msg,
                            all_categories=Category.query.order_by(Category.name).all())
 
 

@@ -13,19 +13,19 @@
                     <!--author box-->
                     <div class="author-bio mb-50 bg-white p-30 border-radius-10">
                         <div class="author-image mb-30">
-                            <a href="author.html"><img src="http://via.placeholder.com/300x300" alt="" class="avatar"></a>
+                            <img src="{{ user.pfp_data }}" alt="" class="avatar">
                         </div>
                         <div class="author-info">
-                            <h3 class="font-weight-900"><span class="vcard author"><span class="fn"><a href="author.html" rel="author">Ankush</a></span></span>
+                            <h3 class="font-weight-900"><span class="vcard author"><span class="fn">{{ user.username }}</span></span>
                             </h3>
                             <h5 class="text-muted">About author</h5>
-                            <div class="author-description text-muted">Hi, I’m Ankush, a Guwahati native, who loves CS and Motoring, and is about to embark on a journey of soul searching that would change the course of my life forever.</div>
-                            <strong class="text-muted">Follow: </strong>
-                            <ul class="header-social-network d-inline-block list-inline color-white mb-20">
-                                <li class="list-inline-item"><a class="fb" href="#" target="_blank" title="Facebook"><i class="elegant-icon social_facebook"></i></a></li>
-                                <li class="list-inline-item"><a class="tw" href="#" target="_blank" title="Tweet now"><i class="elegant-icon social_twitter"></i></a></li>
-                                <li class="list-inline-item"><a class="pt" href="#" target="_blank" title="Pin it"><i class="elegant-icon social_pinterest"></i></a></li>
-                            </ul>
+                            <div class="author-description text-muted">{{ user.long_desc }}</div>
+<!--                            <strong class="text-muted">Follow: </strong>-->
+<!--                            <ul class="header-social-network d-inline-block list-inline color-white mb-20">-->
+<!--                                <li class="list-inline-item"><a class="fb" href="#" target="_blank" title="Facebook"><i class="elegant-icon social_facebook"></i></a></li>-->
+<!--                                <li class="list-inline-item"><a class="tw" href="#" target="_blank" title="Tweet now"><i class="elegant-icon social_twitter"></i></a></li>-->
+<!--                                <li class="list-inline-item"><a class="pt" href="#" target="_blank" title="Pin it"><i class="elegant-icon social_pinterest"></i></a></li>-->
+<!--                            </ul>-->
                         </div>
                     </div>
                 </div>
@@ -120,33 +120,37 @@
 <!--                        </div>-->
 <!--                    </article>-->
 <!--                </div>-->
+            {% if confirmation_msg %}
+                <h1 class="mt-30 text-center">{{ confirmation_msg }}</h1>
+            {% else %}
                 <h1 class="mt-30 text-center">Get in touch</h1>
+            {% endif %}
                 <hr class="wp-block-separator is-style-wide">
-                <form class="form-contact comment_form" action="#" id="commentForm">
+                <form class="form-contact comment_form" id="commentForm" action="{{ url_for('show_user_profile', user_id=user.id) }}" method="POST">
+                    {{ form.csrf_token }}
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <input class="form-control" name="name" id="name" type="text" placeholder="Name">
+                                {{ form.name(class="form-control", placeholder="Name") }}
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <input class="form-control" name="email" id="email" type="email" placeholder="Email">
+                                {{ form.phone(class="form-control", placeholder="Phone") }}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <input class="form-control" name="website" id="website" type="text" placeholder="Phone">
+                                {{ form.email(class="form-control", placeholder="Email") }}
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Message"></textarea>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <button type="submit" class="button button-contactForm">Send message</button>
+                    <div class="form-group text-center">
+                        {{ form.submit(class="button button-contactForm") }}
                     </div>
                 </form>
             </div>

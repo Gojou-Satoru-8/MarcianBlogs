@@ -67,14 +67,14 @@
 <!--                        <li class="list-inline-item"><a class="social-icon tw text-xs-center" target="_blank" href="#"><i class="elegant-icon social_twitter "></i></a></li>-->
 <!--                        <li class="list-inline-item"><a class="social-icon pt text-xs-center" target="_blank" href="#"><i class="elegant-icon social_pinterest "></i></a></li>-->
 <!--                    </ul>-->
-<!--                </div>-->
+                </div>
                 <!--author box-->
                 <div class="author-bio p-30 mt-50 border-radius-10 bg-white wow fadeIn animated">
                     <div class="author-image mb-30">
-                        <a href="author.html"><img src="http://via.placeholder.com/300x300" alt="" class="avatar"></a>
+                        <a href="{{ url_for('show_user_profile', user_id=post.author.id) }}"><img src="http://via.placeholder.com/300x300" alt="" class="avatar"></a>
                     </div>
                     <div class="author-info">
-                        <h4 class="font-weight-bold mb-20"><span class="vcard author"><span class="fn"><a href="author.html" title="Posted by Barbara Cartland" rel="author">{{ post.author.username }}</a></span></span>
+                        <h4 class="font-weight-bold mb-20"><span class="vcard author"><span class="fn"><a href="{{ url_for('show_user_profile', user_id=post.author.id) }}" title="Posted by Barbara Cartland" rel="author">{{ post.author.username }}</a></span></span>
                         </h4>
                         <h5 class="text-muted">About author</h5>
                         <div class="author-description text-muted">You should write because you love the shape of stories and sentences and the creation of different words on a page. </div>
@@ -102,71 +102,41 @@
                             <h5 class="mt-5 mb-30">More from the Author</h5>
                         </div>
                         <div class="loop-list loop-list-style-1">
-                            <article class="hover-up-2 transition-normal wow fadeInUp  animated">
-                                <div class="row mb-40 list-style-2">
-                                    <div class="col-md-4">
-                                        <div class="post-thumb position-relative border-radius-5">
-                                            <div class="img-hover-slide border-radius-5 position-relative" style="background-image: url(http://via.placeholder.com/1000x600)">
-                                                <a class="img-link" href="single.html"></a>
-                                            </div>
-                                            <ul class="social-share">
-                                                <li><a href="#"><i class="elegant-icon social_share"></i></a></li>
-                                                <li><a class="fb" href="#" title="Share on Facebook" target="_blank"><i class="elegant-icon social_facebook"></i></a></li>
-                                                <li><a class="tw" href="#" target="_blank" title="Tweet now"><i class="elegant-icon social_twitter"></i></a></li>
-                                                <li><a class="pt" href="#" target="_blank" title="Pin it"><i class="elegant-icon social_pinterest"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-8 align-self-center">
-                                        <div class="post-content">
-                                            <div class="entry-meta meta-0 font-small mb-10">
-                                                <a href="category.html"><span class="post-cat text-primary">Food</span></a>
-                                            </div>
-                                            <h5 class="post-title font-weight-900 mb-20">
-                                                <a href="single.html">Helpful Tips for Working from Home as a Freelancer</a>
-                                                <span class="post-format-icon"><i class="elegant-icon icon_star_alt"></i></span>
-                                            </h5>
-                                            <div class="entry-meta meta-1 float-left font-x-small text-uppercase">
-                                                <span class="post-on">7 August</span>
-                                                <span class="time-reading has-dot">11 mins read</span>
-                                                <span class="post-by has-dot">3k views</span>
+                            {% for post in related_posts %}
+                                <article class="hover-up-2 transition-normal wow fadeInUp animated">
+                                    <div class="row mb-40 list-style-2">
+                                        <div class="col-md-4">
+                                            <div class="post-thumb position-relative border-radius-5">
+                                                <div class="img-hover-slide border-radius-5 position-relative" style="background-image: url({{ post.img_url }})">
+                                                    <a class="img-link" href="{{ url_for('show_post', post_id=post.id) }}"></a>
+                                                </div>
+    <!--                                            <ul class="social-share">-->
+    <!--                                                <li><a href="#"><i class="elegant-icon social_share"></i></a></li>-->
+    <!--                                                <li><a class="fb" href="#" title="Share on Facebook" target="_blank"><i class="elegant-icon social_facebook"></i></a></li>-->
+    <!--                                                <li><a class="tw" href="#" target="_blank" title="Tweet now"><i class="elegant-icon social_twitter"></i></a></li>-->
+    <!--                                                <li><a class="pt" href="#" target="_blank" title="Pin it"><i class="elegant-icon social_pinterest"></i></a></li>-->
+    <!--                                            </ul>-->
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="hover-up-2 transition-normal wow fadeInUp  animated">
-                                <div class="row mb-40 list-style-2">
-                                    <div class="col-md-4">
-                                        <div class="post-thumb position-relative border-radius-5">
-                                            <div class="img-hover-slide border-radius-5 position-relative" style="background-image: url(http://via.placeholder.com/1000x600)">
-                                                <a class="img-link" href="single.html"></a>
-                                            </div>
-                                            <ul class="social-share">
-                                                <li><a href="#"><i class="elegant-icon social_share"></i></a></li>
-                                                <li><a class="fb" href="#" title="Share on Facebook" target="_blank"><i class="elegant-icon social_facebook"></i></a></li>
-                                                <li><a class="tw" href="#" target="_blank" title="Tweet now"><i class="elegant-icon social_twitter"></i></a></li>
-                                                <li><a class="pt" href="#" target="_blank" title="Pin it"><i class="elegant-icon social_pinterest"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-8 align-self-center">
-                                        <div class="post-content">
-                                            <div class="entry-meta meta-0 font-small mb-10">
-                                                <a href="category.html"><span class="post-cat text-success">Cooking</span></a>
-                                            </div>
-                                            <h5 class="post-title font-weight-900 mb-20">
-                                                <a href="single.html">10 Easy Ways to Be Environmentally Conscious At Home</a>
-                                            </h5>
-                                            <div class="entry-meta meta-1 float-left font-x-small text-uppercase">
-                                                <span class="post-on">27 Sep</span>
-                                                <span class="time-reading has-dot">10 mins read</span>
-                                                <span class="post-by has-dot">22k views</span>
+                                        <div class="col-md-8 align-self-center">
+                                            <div class="post-content">
+                                                <div class="entry-meta meta-0 font-small mb-10">
+                                                    <a href="{{ url_for('posts_by_category', cat_id=post.category.id) }}"><span class="post-cat text-primary">{{ post.category.name }}</span></a>
+                                                </div>
+                                                <h5 class="post-title font-weight-900 mb-20">
+                                                    <a href="{{ url_for('show_post', post_id=post.id) }}">{{ post.title }}</a>
+    <!--                                                <span class="post-format-icon"><i class="elegant-icon icon_star_alt"></i></span>-->
+                                                </h5>
+                                                <div class="entry-meta meta-1 float-left font-x-small text-uppercase">
+                                                    <span class="post-on">{{ post.datetime.strftime("%b %d, %Y") }}</span>
+<!--                                                    <span class="time-reading has-dot">11 mins read</span>-->
+<!--                                                    <span class="post-by has-dot">3k views</span>-->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </article>
+                                </article>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -234,6 +204,9 @@
                                                 <a href="#">{{ comment.commenter.username }}</a>
                                             </h5>
                                             <p class="date">{{ comment.datetime.strftime("%b %d, %Y") }} </p>
+                                            {% if current_user == comment.commenter %}
+                                            <a class="date" href="{{ url_for('delete_comment', comment_id=comment.id) }}">Delete this comment</a>
+                                            {% endif %}
                                         </div>
 <!--                                        <div class="reply-btn">-->
 <!--                                            <a href="#" class="btn-reply">Reply</a>-->
