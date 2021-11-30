@@ -6,15 +6,15 @@
                 <h1 class="entry-title mb-20 font-weight-900 ">
                     About me
                 </h1>
-                <p class="text-muted"><span class="typewrite d-inline" data-period="2000" data-type='[ " Travel Blogger. ", "Content Writter. ", "Food Guides " ]'></span></p>
+<!--                <p class="text-muted"><span class="typewrite d-inline" data-period="2000" data-type='[ " Travel Blogger. ", "Content Writter. ", "Food Guides " ]'></span></p>-->
             </div>
             <div class="row">
                 <div class="col-12">
                     <!--author box-->
                     <div class="author-bio mb-50 bg-white p-30 border-radius-10">
-                        <div class="author-image mb-30">
-                            <img src="{{ user.pfp_data }}" alt="" class="avatar">
-                        </div>
+<!--                        <div class="author-image mb-30">-->
+<!--                            <img src="{{ user.pfp_data }}" alt="" class="avatar">-->
+<!--                        </div>-->
                         <div class="author-info">
                             <h3 class="font-weight-900"><span class="vcard author"><span class="fn">{{ user.username }}</span></span>
                             </h3>
@@ -125,35 +125,34 @@
             {% else %}
                 <h1 class="mt-30 text-center">Get in touch</h1>
             {% endif %}
-                <hr class="wp-block-separator is-style-wide">
-                <form class="form-contact comment_form" id="commentForm" action="{{ url_for('show_user_profile', user_id=user.id) }}" method="POST">
-                    {{ form.csrf_token }}
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                {{ form.name(class="form-control", placeholder="Name") }}
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                {{ form.phone(class="form-control", placeholder="Phone") }}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.email(class="form-control", placeholder="Email") }}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                            </div>
+            <hr class="wp-block-separator is-style-wide">
+            <form class="form-contact comment_form" id="commentForm" action="{{ url_for('show_user_profile', user_id=user.id) }}" method="POST">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            {{ form.name(class="form-control", placeholder="Name") }}
                         </div>
                     </div>
-                    <div class="form-group text-center">
-                        {{ form.submit(class="button button-contactForm") }}
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            {{ form.phone(class="form-control", placeholder="Phone") }}
+                        </div>
                     </div>
-                </form>
-            </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            {{ form.email(class="form-control", placeholder="Email") }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    {{ form.submit(class="button button-contactForm") }}
+                </div>
+            </form>
         </div>
     </main>
     <!-- End Main content -->

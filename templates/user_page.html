@@ -6,9 +6,9 @@
                 <div class="row">
                     <div class="col-lg-6 align-self-center">
 <!--                        <p class="text-muted"><span class="typewrite d-inline" data-period="2000" data-type='[ " Travel Blogger. ", "Content Writter. ", "Food Guides " ]'></span></p>-->
-                        <h2>Hello, I’m <span><a href="{{url_for('show_user_profile', user_id=user.id)}}">{{ user.username }}</a></span></h2>
+                        <h2>Hello, I’m <span><a href="{{url_for('show_user_profile', user_id=user.id)}}">{{ user.username.split()[0] }}</a></span></h2>
                         <h3 class="mb-20"> Welcome to my blog</h3>
-                        <h5 class="text-muted">I'm a <span class="typewrite d-inline" data-period="2000" data-type='[ " Travel Blogger. ", "Content Writer. ", "Food Guide " ]'></span></h5>
+<!--                        <h5 class="text-muted">I'm a <span class="typewrite d-inline" data-period="2000" data-type='[ " Travel Blogger. ", "Content Writer. ", "Food Guide " ]'></span></h5>-->
 <!--                        <a href="{url_for('show_author')}">Contact</a>-->
 <!--                        <form class="input-group form-subcriber mt-30 d-flex">-->
 <!--                            <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">-->
@@ -16,7 +16,7 @@
 <!--                        </form>-->
                     </div>
                     <div class="col-lg-6 text-right d-none d-lg-block">
-                        <img src="assets/imgs/authors/featured.png" alt="">
+<!--                        <img src="{{ url_for('static', filename='assets/imgs/authors/featured.png') }}" alt="">-->
                     </div>
                 </div>
             </div>
