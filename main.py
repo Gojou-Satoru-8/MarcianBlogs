@@ -12,7 +12,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask_uploads import UploadSet, IMAGES
 from werkzeug.utils import secure_filename
 from wtforms.validators import DataRequired, URL, Email, EqualTo
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
+# from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flask_ckeditor import CKEditorField
 from functools import wraps, update_wrapper
 import smtplib
