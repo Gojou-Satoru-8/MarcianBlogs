@@ -565,6 +565,7 @@ def posts_by_category(cat_id):
 
 @app.route("/add-category")
 @admin_only
+@login_required
 def add_category():
     form = AddCategoryForm()
     if form.validate_on_submit():
