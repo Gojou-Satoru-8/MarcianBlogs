@@ -1,0 +1,53 @@
+{% include 'header.html' %}
+    <!-- Start Main content -->
+    <main class="bg-grey pt-80 pb-50">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-md-10">
+                    <div class="login_wrap widget-taber-content p-30 bg-white border-radius-10">
+                        <div class="padding_eight_all bg-white">
+                            <div class="heading_s1 text-center">
+                                <h3 class="mb-30 font-weight-900">Login</h3>
+                            </div>
+                            {% set messages = get_flashed_messages() %}
+                            {% for message in messages %}
+                            <div class="alert alert-warning alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+
+                            <form method="POST" action="{{ url_for('add_category') }}" novalidate>
+                                {{ form.csrf_token }}
+                                <div class="form-group">
+                                    {{ form.category_name(class="form-control", placeholder="Name of the Category") }}
+                                    {% for err in form.category_name.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+<!--                                <div class="login_footer form-group">-->
+
+<!--                                    <a class="text-muted" href="#">Forgot password?</a>-->
+<!--                                </div>-->
+                                <div class="form-group">
+                                    {{ form.submit(class="button button-contactForm btn-block") }}
+                                </div>
+                            </form>
+<!--                            <div class="divider-text-center mt-15 mb-15">-->
+<!--                                <span> or</span>-->
+<!--                            </div>-->
+<!--                            <ul class="btn-login list_none text-center mb-15">-->
+<!--                                <li><a href="#" class="btn btn-facebook"><i class="elegant-icon social_facebook  mr-5"></i>Facebook</a></li>-->
+<!--                                <li><a href="#" class="btn btn-google"><i class="elegant-icon social_googleplus mr-5"></i>Google</a></li>-->
+<!--                            </ul>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- End Main content -->
+{% include 'footer.html' %}

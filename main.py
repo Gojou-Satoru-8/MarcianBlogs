@@ -172,6 +172,11 @@ class ResetForm(FlaskForm):
     submit = SubmitField(label="Reset Password")
 
 
+class AddCategoryForm(FlaskForm):
+    category_name = StringField(label="Name of the Category", validators=[DataRequired()])
+    submit = SubmitField(label="Add Category")
+
+
 login_manager = LoginManager(app=app)
 
 
@@ -556,6 +561,23 @@ def posts_by_category(cat_id):
     category = db.session.query(Category).get(cat_id)
     return render_template("posts-by-category.html", category=category,
                            all_categories=Category.query.order_by(Category.name).all())
+
+
+@app.route("/add-category")
+@admin_only
+def add_category():
+    form = AddCategoryForm()
+    if form.validate_on_submit():
+        if db.session.query(Category).filter_by(name=form.category_name.data).first():
+            flash("Category already exists")
+            return render_template("add_category.html", form=form)
+            # Or return redirect(url_for('add_category', form=form))
+        else:
+            new_category = Category(name=form.category_name.data)
+            db.session.add(new_category)
+            db.session.commit()
+            return redirect(url_for('home'))
+    return render_template("add_category.html", form=form)
 
 
 # @app.route("/make-a-new-post/")   # /new-post route is working so commented
