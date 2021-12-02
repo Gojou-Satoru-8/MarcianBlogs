@@ -108,10 +108,10 @@ class CreatePostForm(FlaskForm):
     subtitle = StringField("Subtitle", validators=[DataRequired()])
     img_url = StringField("Blog Image URL", validators=[DataRequired(), URL(require_tld=True)])
     body = CKEditorField("Blog Content", validators=[DataRequired()])
-    # all_categories = db.session.query(Category).order_by(Category.name).all()
-    # all_categories_name = [category.name for category in all_categories]
-    # category = SelectField(u"Choose the category that best suits your Blog", validators=[DataRequired()],
-    #                        choices=all_categories_name)
+    all_categories = db.session.query(Category).order_by(Category.name).all()
+    all_categories_name = [category.name for category in all_categories]
+    category = SelectField(u"Choose the category that best suits your Blog", validators=[DataRequired()],
+                           choices=all_categories_name)
     submit = SubmitField("Post Your Blog")
 
 
