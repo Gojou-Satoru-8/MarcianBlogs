@@ -563,7 +563,7 @@ def posts_by_category(cat_id):
                            all_categories=Category.query.order_by(Category.name).all())
 
 
-@app.route("/add-category")
+@app.route("/add-category", methods=["GET", "POST"])
 @admin_only
 @login_required
 def add_category():
