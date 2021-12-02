@@ -112,7 +112,7 @@ class CreatePostForm(FlaskForm):
     all_categories_name = [category.name for category in all_categories]
     category = SelectField(u"Choose the category that best suits your Blog", validators=[DataRequired()],
                            choices=all_categories_name)
-    submit = SubmitField("Post Your Blog")
+    submit = SubmitField(label="Post Your Blog")
 
 
 class RegisterForm(FlaskForm):
@@ -160,7 +160,7 @@ class EditProfileForm(FlaskForm):
     long_desc = CKEditorField(label="Describe yourself to your readers", validators=[DataRequired()])
     pfp = FileField(label="Upload a Profile Picture with max-size 5 MB (only .jpeg, .png and .gif accepted)",
                     validators=[FileAllowed(upload_set=UploadSet('images', IMAGES), message="Images only!")])
-    submit = SubmitField("Confirm Changes")
+    submit = SubmitField(label="Confirm Changes")
 
 
 class ResetForm(FlaskForm):
@@ -517,9 +517,9 @@ def edit_user_profile(user_id):
         user.email = edit_profile_form.email.data
         user.short_desc = edit_profile_form.short_desc.data
         user.long_desc = edit_profile_form.long_desc.data
-        file_uploaded = request.files
+        # file_uploaded = request.files
         print(edit_profile_form.username.data, edit_profile_form.email.data, edit_profile_form.short_desc.data)
-        print(file_uploaded)
+        # print(file_uploaded)
         # print(edit_profile_form.pfp.object_data)
         db.session.commit()
         return redirect(url_for("show_user_profile", user_id=user.id))  # Or user_id=user_id

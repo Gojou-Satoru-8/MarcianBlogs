@@ -20,6 +20,10 @@
                             </h3>
                             <h5 class="text-muted">About author</h5>
                             <div class="author-description text-muted">{{ user.long_desc }}</div>
+                            {% if current_user == user %}
+                            <a href="{{ url_for('edit_user_profile', user_id=user.id) }}" class="author-bio-link mb-md-0 mb-3">Edit your profile</a>
+                            <a href="{{ url_for('reset_password', user_id=user.id) }}" class="author-bio-link mb-md-0 mb-3">Reset Password</a>
+                            {% endif %}
 <!--                            <strong class="text-muted">Follow: </strong>-->
 <!--                            <ul class="header-social-network d-inline-block list-inline color-white mb-20">-->
 <!--                                <li class="list-inline-item"><a class="fb" href="#" target="_blank" title="Facebook"><i class="elegant-icon social_facebook"></i></a></li>-->
