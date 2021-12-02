@@ -63,16 +63,34 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     {{ form.title(class="form-control", placeholder="Title") }}
+                                    {% for err in form.title.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     {{ form.subtitle(class="form-control", placeholder="Subtitle") }}
+                                    {% for err in form.subtitle.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     {{ form.img_url(class="form-control", placeholder="Place your Background Image URL here, and select your category below") }}
+                                    {% for err in form.img_url.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
     <!--                        <div class="col-sm-6 pb-80">-->
@@ -83,11 +101,23 @@
                             <div class="col-12 pb-20">
                                 <div class="form-group">
                                     {{ form.category(class="form-control", placeholder="Choose a category that best suits your Blog") }}
+                                    {% for err in form.title.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     {{ form.body(class="form-control", placeholder="Body") }}
+                                    {% for err in form.title.errors %}
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            {{ err }}
+                                        </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
