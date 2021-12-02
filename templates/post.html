@@ -77,7 +77,7 @@
                         <h4 class="font-weight-bold mb-20"><span class="vcard author"><span class="fn"><a href="{{ url_for('show_user_profile', user_id=post.author.id) }}" title="Posted by Barbara Cartland" rel="author">{{ post.author.username }}</a></span></span>
                         </h4>
                         <h5 class="text-muted">About author</h5>
-                        <div class="author-description text-muted">You should write because you love the shape of stories and sentences and the creation of different words on a page. </div>
+                        <div class="author-description text-muted">{{ post.author.long_desc }}</div>
                         {% if current_user == post.author %}
                         <a href="{{ url_for('posts_by_user', user_id=post.author.id) }}" class="author-bio-link mb-md-0 mb-3">View all your posts</a>
                         <a href="{{ url_for('edit_post', post_id=post.id) }}" class="author-bio-link mb-md-0 mb-3">Edit this post</a>
